@@ -1,0 +1,85 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Support\Facades\Log;
+use Throwable;
+use Exception;
+use App\Repositories\DummySimpleNamespace\DummyRepositoryClass;
+use App\Models\DummySimpleNamespace\DummyModelClass;
+
+class DummyClass
+{
+    private $DummyRepositoryVariable;
+
+    public function __construct(DummyRepositoryClass $DummyRepositoryVariable)
+    {
+        $this->DummyRepositoryVariable = $DummyRepositoryVariable;
+    }
+
+    public function getList($request)
+    {
+        $filter = $request;
+        return $this->DummyRepositoryVariable->getList($filter);
+    }
+
+
+      /**
+     * [description]
+     * @param $request
+     * @return DummyModelClass|null
+     * @author: cuibo 2019/5/30 10:27
+     */
+    public function store($request)
+    {
+        $DummyModelVariable = new DummyModelClass();
+        $DummyModelVariable->fill([
+            DummyModelStoreFields
+        ]);
+        if(!$this->DummyRepositoryVariable->store($DummyModelVariable)){
+            return null;
+        }
+        return $DummyModelVariable;
+    }
+    /**
+     * [description]
+     * @param $request
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @throws Exception
+     * @author: cuibo 2019/5/30 10:25
+     */
+    public function show($request, $id)
+    {
+        return $this->DummyRepositoryVariable->firstById($id);
+    }
+    /**
+     * [description]
+     * @param $request
+     * @param $id
+     * @return bool
+     * @throws Exception
+     * @author: cuibo 2019/5/30 10:24
+     */
+    public function update($request, $id)
+    {
+        $DummyModelVariable =$this->DummyRepositoryVariable->firstById($id);
+        $DummyModelVariable->fill([
+            DummyModelUpdateFields
+        ]);
+        return $this->DummyRepositoryVariable->update($DummyModelVariable);
+    }
+
+    /**
+     * [description]
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     * @author: cuibo 2019/5/30 10:22
+     */
+    public function destroy($id)
+    {
+        $DummyModelVariable =$this->DummyRepositoryVariable->firstById($id);
+        return $this->DummyRepositoryVariable->destroy($DummyModelVariable);
+    }
+}

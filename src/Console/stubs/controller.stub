@@ -1,0 +1,118 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
+use DummyRootNamespaceHttp\Controllers\Controller;
+use App\Services\DummySimpleNamespace\DummyServiceClass;
+use Illuminate\Support\Facades\Log;
+use Throwable;
+
+class DummyClass extends Controller
+{
+    use ApiResponse;
+
+     /**
+      * [description]
+      * @param Request $request
+      * @param DummyServiceClass $DummyServiceVariable
+      * @return \Illuminate\Http\JsonResponse
+      * @author: cuibo
+      */
+    public function index(Request $request, DummyServiceClass $DummyServiceVariable)
+    {
+        $data = $DummyServiceVariable->getList($request);
+
+        return $this->success($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+    * [description]
+    * @param Request $request
+    * @param DummyServiceClass $DummyServiceVariable
+    * @return \Illuminate\Http\JsonResponse
+    * @author: cuibo
+    */
+    public function store(Request $request, DummyServiceClass $DummyServiceVariable)
+    {
+        $this->validate($request, [
+            DummyStoreValidateVariables
+        ], [
+            DummyStoreValidateMessages
+        ]);
+
+        try {
+            $DummyServiceVariable->store($request);
+        } catch (Throwable $throwable) {
+            Log::error($throwable->getMessage());
+            return $this->error($throwable->getMessage());
+        }
+        return $this->success();
+    }
+
+    public function show(Request $request, $id)
+    {
+        //
+    }
+
+
+    public function edit(Request $request, $id)
+    {
+        //
+    }
+
+     /**
+     * [description]
+     * @param Request $request
+     * @param DummyServiceClass $DummyServiceVariable
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @author: cuibo
+     */
+    public function update(Request $request, DummyServiceClass $DummyServiceVariable, $id)
+    {
+        $this->validate($request, [
+            DummyUpdateValidateVariables
+        ], [
+            DummyUpdateValidateMessages
+        ]);
+
+        try {
+            $DummyServiceVariable->update($request, $id);
+        } catch (Throwable $throwable) {
+            Log::error($throwable->getMessage());
+            return $this->error($throwable->getMessage());
+        }
+        return $this->success();
+    }
+
+    /**
+    * [description]
+    * @param Request $request
+    * @param DummyServiceClass $DummyServiceVariable
+    * @param $id
+    * @return \Illuminate\Http\JsonResponse
+    * @author: cuibo
+    */
+    public function destroy(Request $request, DummyServiceClass $DummyServiceVariable, $id)
+    {
+        try {
+            $DummyServiceVariable->destroy($id);
+        } catch (Throwable $throwable) {
+            Log::error($throwable->getMessage());
+            return $this->error($throwable->getMessage());
+        }
+        return $this->success();
+    }
+}

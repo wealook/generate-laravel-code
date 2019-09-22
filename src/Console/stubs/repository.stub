@@ -1,0 +1,68 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Support\Facades\Log;
+use Throwable;
+use Exception;
+use DummyRootNamespaceModels\DummySimpleNamespace\DummyModelClass;
+class DummyClass
+{
+
+
+    public function getList($filter)
+    {
+        $DummyModelVariable = DummyModelClass::query();
+        DummyFilterCode
+        $DummyModelVariable->orderBy('id', 'DESC');
+        return $DummyModelVariable->paginate();
+    }
+
+
+     /**
+     * [description]
+     * @param DummyModelClass $DummyModelVariable
+     * @return bool
+     * @author: cuibo 2019/5/30 10:21
+     */
+    public function store(DummyModelClass $DummyModelVariable)
+    {
+        return $DummyModelVariable->save();
+    }
+    /**
+     * [description]
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     * @throws Exception
+     * @author: cuibo 2019/5/30 10:20
+     */
+    public function firstById($id)
+    {
+        $DummyModelVariable = DummyModelClass::query()->where('id', $id)->first();
+        if (!$DummyModelVariable) {
+            throw  new exception('记录不存在');
+        }
+        return $DummyModelVariable;
+    }
+    /**
+     * [description]
+     * @param DummyModelClass $DummyModelVariable
+     * @return bool
+     * @author: cuibo 2019/5/30 10:25
+     */
+    public function update(DummyModelClass $DummyModelVariable)
+    {
+        return $DummyModelVariable->save();
+    }
+    /**
+     * [description]
+     * @param DummyModelClass $DummyModelVariable
+     * @return bool|null
+     * @throws Exception
+     * @author: cuibo
+     */
+    public function destroy(DummyModelClass $DummyModelVariable)
+    {
+        return $DummyModelVariable->delete();
+    }
+}

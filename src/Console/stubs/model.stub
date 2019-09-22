@@ -1,0 +1,15 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Database\Eloquent\Model;
+
+class DummyClass extends Model
+{
+
+    protected $fillable = [DummyModelFillable];
+    protected $hidden = [DummyModelHidden];
+    public $connection = 'DummyModelConnection';
+    public $table = 'DummyModelTable';
+    public $timestamps = 'DummyModelTimestamps';
+}
