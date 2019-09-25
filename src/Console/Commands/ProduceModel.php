@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class ProduceModel extends GeneratorCommand
 {
-    protected $signature = 'produce:model {name} {--table=}  {--connection=}  {--resource}  {--route=web} {{--force}}';
+    protected $signature = 'produce:model {name} {--table=}  {--connection=} {--force}';
     protected $description = 'Command description';
     protected $type = '';
 
@@ -35,15 +35,7 @@ class ProduceModel extends GeneratorCommand
             return false;
         }
         $this->getTableInfo();
-//        $this->buildController();
         $this->buildModel();
-//        $this->buildService();
-//        $this->buildRepository();
-//        $this->buildRoute();
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
-        // stub files so that it gets the correctly formatted namespace and class name.
-//        $this->info($this->type . ' created successfully.');
         return null;
     }
 
