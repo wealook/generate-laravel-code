@@ -1,7 +1,11 @@
+
+zhuce          $app->register('Wealook\Generate\GenerateServiceProvider');
+
 ```
 #生成model文件
  produce:model {name} {--table=}  {--connection=}  {{--force}}
 ```
+
 * name 名称   Admin\\Config
 * --table=表名        
 * --connection  数据库连接名称
