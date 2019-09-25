@@ -13,6 +13,7 @@ class GenerateServiceProvider extends  ServiceProvider {
     protected $commands = [
 //       MakeCode::class,
         Console\Commands\ProduceModel::class,
+        Console\Commands\ProduceModelSR::class,
     ];
 
 

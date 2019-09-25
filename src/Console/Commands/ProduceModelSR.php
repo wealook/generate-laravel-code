@@ -4,10 +4,13 @@ namespace Wealook\Generate\Console\Commands;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
-class MakeCode extends GeneratorCommand
+class ProduceModelSR extends GeneratorCommand
 {
-    protected $signature = 'make:code {name} {--table=}  {--connection=}  {--resource}  {--route=web}';
+    protected $signature = 'produce:model_sr {name} {--table=}  {--connection=}  {--resource}  {--route=web}';
     protected $description = 'Command description';
     protected $type = '';
 
@@ -56,7 +59,7 @@ class MakeCode extends GeneratorCommand
             $this->error($this->type . ' already exists!');
             return false;
         }
-
+        Log::debug($name);
         $this->makeDirectory($path);
         $this->files->put($path, $this->buildClass($name));
         $this->info($this->type . ' created successfully.');
@@ -90,6 +93,7 @@ class MakeCode extends GeneratorCommand
             $this->error($this->type . ' already exists!');
             return false;
         }
+        Log::debug($name);
         $this->makeDirectory($path);
         $this->files->put($path, $this->buildClass($name));
         $this->info($this->type . ' created successfully.');
@@ -121,9 +125,10 @@ class MakeCode extends GeneratorCommand
         $tmpArr = explode('\\', str_replace(['//', '/'], ['\\', '\\'], $this->getNameInput()));
         $routePrefix = [];
         foreach ($tmpArr as $str) {
-            $routePrefix[] = snake_case($str);
+            $routePrefix[] = Str::snake($str);
         }
-        $tmpPrefix = implode(".", $routePrefix);
+        $routes[] = '';
+        $tmpPrefix = implode("/", $routePrefix);
         if ($this->option('resource')) {
             $routes[] = "Route::resource('$tmpPrefix','$name');";
         } else {
@@ -161,10 +166,8 @@ class MakeCode extends GeneratorCommand
     public function buildClass($name)
     {
         $stub = $this->files->get($this->getStub());
-        \Log::info($stub);
         $method = 'replace' . lcfirst($this->type);
         $this->$method($stub, $name);
-//        $this->type = '';
         return $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
     }
 
@@ -213,10 +216,13 @@ class MakeCode extends GeneratorCommand
         $lastName = array_pop($tmpArr);
         $simpleNamespace = implode('\\', $tmpArr);
         $stub = str_replace(
-            ['DummySimpleNamespace', 'DummyServiceClass', 'DummyServiceVariable',
+            [
+                'DummySimpleNamespace', 'DummyServiceClass', 'DummyServiceVariable',
                 'DummyStoreValidateVariables', 'DummyStoreValidateMessages',
-                'DummyUpdateValidateVariables', 'DummyUpdateValidateMessages'],
-            [$simpleNamespace, ucfirst($lastName . 'Service'), lcfirst($lastName . 'Service'),
+                'DummyUpdateValidateVariables', 'DummyUpdateValidateMessages'
+            ],
+            [
+                $simpleNamespace, ucfirst($lastName . 'Service'), lcfirst($lastName . 'Service'),
                 implode("\n", $rules), implode("\n", $messages),
                 implode("\n", $rules), implode("\n", $messages),
             ],
@@ -247,9 +253,12 @@ class MakeCode extends GeneratorCommand
             $timestamps = true;
         }
         $stub = str_replace(
-            ['DummyModelFillable', 'DummyModelHidden',
-                'DummyModelConnection', 'DummyModelTable', 'DummyModelTimestamps'],
-            [implode(', ', $fillable), implode(', ', $hidden),
+            [
+                'DummyModelFillable', 'DummyModelHidden',
+                'DummyModelConnection', 'DummyModelTable', 'DummyModelTimestamps'
+            ],
+            [
+                implode(', ', $fillable), implode(', ', $hidden),
                 $this->connection, $this->table, $timestamps
             ],
             $stub
@@ -274,14 +283,19 @@ class MakeCode extends GeneratorCommand
             $key = $item->Field;
             $fillFields[] = "'$key'=>\$request['$key'],";
         }
+        Log::error($this->getNameInput());
         $tmpArr = explode("\\", $this->getNameInput());
+        Log::error($tmpArr);
+
         $lastName = array_pop($tmpArr);
         $simpleNamespace = implode('\\', $tmpArr);
         $stub = str_replace(
-            ['DummySimpleNamespace', 'DummyRepositoryClass', 'DummyRepositoryVariable', 'DummyModelClass', 'DummyModelVariable',
+            [
+                'DummySimpleNamespace', 'DummyRepositoryClass', 'DummyRepositoryVariable', 'DummyModelClass', 'DummyModelVariable',
                 'DummyModelStoreFields', 'DummyModelUpdateFields'
             ],
-            [$simpleNamespace, ucfirst($lastName . 'Repository'), lcfirst($lastName . 'Repository'), ucfirst($lastName), lcfirst($lastName),
+            [
+                $simpleNamespace, ucfirst($lastName . 'Repository'), lcfirst($lastName . 'Repository'), ucfirst($lastName), lcfirst($lastName),
                 implode("\n", $fillFields), implode("\n", $fillFields),
             ],
             $stub
@@ -310,23 +324,25 @@ class MakeCode extends GeneratorCommand
                     if(!empty(\$filter['$key'])){
                        \$DummyModelVariable->where('$key','like','%'.\$filter['$key'].'%');
                     }";
-            } else if (in_array($item->Type, ['timestamp', 'datetime'])) {
-                $key = $item->Field . '_start';
-                $code = "
+            } else {
+                if (in_array($item->Type, ['timestamp', 'datetime'])) {
+                    $key = $item->Field . '_start';
+                    $code = "
                     if(!empty(\$filter['$key'])){
                        \$DummyModelVariable->where('$key','>=',\$filter['$key']);
                     }";
-                $key = $item->Field . '_end';
-                $code .= "\n
+                    $key = $item->Field . '_end';
+                    $code .= "\n
                     if(!empty(\$filter['$key'])){
                        \$DummyModelVariable->where('$key','<=',\$filter['$key']);
                     }";
-            } else {
-                $key = $item->Field;
-                $code = "
+                } else {
+                    $key = $item->Field;
+                    $code = "
                     if(!empty(\$filter['$key'])){
                        \$DummyModelVariable->where('$key',\$filter['$key']);
                     }";
+                }
             }
             $filterCodes[] = $code;
 
