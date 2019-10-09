@@ -41,16 +41,22 @@ class ProduceModelSR extends GeneratorCommand
         $this->buildRepository();
         $this->buildRoute();
 
-        $stub = $this->files->get($this->getStub('ApiResponse'));
-        $this->setNamespace('\Traits');
-        $path = lcfirst($this->getPath('Traits\ApiResponse'));
-        $this->makeDirectory($path);
-        $this->files->put($path, $stub);
+//        $this->buildApiResponse();
+
         // Next, we will generate the path to the location where this class' file should get
         // written. Then, we will build the class and make the proper replacements on the
         // stub files so that it gets the correctly formatted namespace and class name.
 //        $this->info($this->type . ' created successfully.');
         return null;
+    }
+
+    private function buildApiResponse()
+    {
+        $stub = $this->files->get($this->getStub('ApiResponse'));
+        $this->setNamespace('\Traits');
+        $path = lcfirst($this->getPath('Traits\ApiResponse'));
+        $this->makeDirectory($path);
+        $this->files->put($path, $stub);
     }
 
 

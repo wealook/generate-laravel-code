@@ -11,7 +11,7 @@ use Throwable;
 
 class DummyClass extends Controller
 {
-    use ApiResponse;
+   // use ApiResponse;
 
     private $DummyServiceVariable;
 
@@ -37,8 +37,8 @@ class DummyClass extends Controller
     public function getList(Request $request)
     {
         $data = $DummyServiceVariable->getList($request);
-
-        return $this->success($data);
+       // return $this->success($data);
+        return response()->json($data);
     }
 
     /**
@@ -71,7 +71,8 @@ class DummyClass extends Controller
             Log::error($throwable->getMessage());
             return $this->error($throwable->getMessage());
         }
-        return $this->success();
+        // return $this->success([]);
+        return response()->json([]);
     }
 
     public function show(Request $request, $id)
@@ -107,7 +108,8 @@ class DummyClass extends Controller
             Log::error($throwable->getMessage());
             return $this->error($throwable->getMessage());
         }
-        return $this->success();
+        // return $this->success([]);
+        return response()->json([]);
     }
 
     /**
@@ -125,6 +127,7 @@ class DummyClass extends Controller
             Log::error($throwable->getMessage());
             return $this->error($throwable->getMessage());
         }
-        return $this->success();
+        //return $this->success();
+        return response()->json([]);
     }
 }
