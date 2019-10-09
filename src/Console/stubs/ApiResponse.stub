@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Traits;
+
+use Illuminate\Support\Arr;
+
+Trait ApiResponse
+{
+    private $responseData = [
+        'code' => 10000,
+        'msg' => '',
+        'data' => [],
+    ];
+
+    public function error(string $msg, int $status = 40000, array $data = [])
+    {
+        $this->responseData['msg'] = $msg;
+        $this->responseData['code'] = $status;
+        $this->responseData['data'] = $data;
+        return response()->json($this->responseData);
+    }
+
+    public function success($data = [], $msg = '')
+    {
+        $this->responseData['msg'] = $msg;
+        $this->responseData['code'] = 10000;
+        $this->responseData['data'] = $data;
+        return response()->json($this->responseData);
+    }
+
+    function paginateFilter($paginate)
+    {
+        if (!is_array($paginate)) {
+            $paginate = $paginate->toArray();
+        }
+        return Arr::only($paginate, ['current_page', 'data', 'last_page', 'per_page', 'total']);
+    }
+}

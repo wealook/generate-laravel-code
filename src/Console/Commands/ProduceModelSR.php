@@ -40,6 +40,12 @@ class ProduceModelSR extends GeneratorCommand
         $this->buildService();
         $this->buildRepository();
         $this->buildRoute();
+
+        $stub = $this->files->get($this->getStub('ApiResponse'));
+        $this->setNamespace('\Traits');
+        $path = lcfirst($this->getPath('Traits\ApiResponse'));
+        $this->makeDirectory($path);
+        $this->files->put($path, $stub);
         // Next, we will generate the path to the location where this class' file should get
         // written. Then, we will build the class and make the proper replacements on the
         // stub files so that it gets the correctly formatted namespace and class name.
@@ -59,10 +65,8 @@ class ProduceModelSR extends GeneratorCommand
             $this->error($this->type . ' already exists!');
             return false;
         }
-        Log::debug($name);
         $this->makeDirectory($path);
         $this->files->put($path, $this->buildClass($name));
-        $this->info($this->type . ' created successfully.');
     }
 
     private function buildModel()
@@ -79,7 +83,6 @@ class ProduceModelSR extends GeneratorCommand
 
         $this->makeDirectory($path);
         $this->files->put($path, $this->buildClass($name));
-        $this->info($this->type . ' created successfully.');
     }
 
     private function buildService()
@@ -93,10 +96,8 @@ class ProduceModelSR extends GeneratorCommand
             $this->error($this->type . ' already exists!');
             return false;
         }
-        Log::debug($name);
         $this->makeDirectory($path);
         $this->files->put($path, $this->buildClass($name));
-        $this->info($this->type . ' created successfully.');
     }
 
     private function buildRepository()
@@ -158,9 +159,10 @@ class ProduceModelSR extends GeneratorCommand
         //. '\Http\Controllers';
     }
 
-    protected function getStub()
+    protected function getStub($type = null)
     {
-        return __DIR__ . '/../stubs/' . $this->type . '.stub';
+        $type = $type ?? $this->type;
+        return __DIR__ . '/../stubs/' . $type . '.stub';
     }
 
     public function buildClass($name)
@@ -236,21 +238,18 @@ class ProduceModelSR extends GeneratorCommand
     {
         $fillable = [];
         $hidden = [];
-        $timestamps = false;
+        $timestamps = 'false';
         foreach ($this->tableInfo as $item) {
             if ($item->Key == 'PRI') {
                 continue;
             }
-//            if (in_array($item->Field, ['created_at', 'updated_at'])) {
-//                continue;
-//            }
             $fillable[] = "'" . $item->Field . "'";
             if (preg_match('/password/', $item->Field)) {
                 $hidden[] = "'" . $item->Field . "'";
             }
         }
-        if (isset($fillable['created_at']) && isset($fillable['updated_at'])) {
-            $timestamps = true;
+        if (in_array("'created_at'", $fillable) && in_array("'updated_at'", $fillable)) {
+            $timestamps = 'true';
         }
         $stub = str_replace(
             [
@@ -281,12 +280,9 @@ class ProduceModelSR extends GeneratorCommand
                 continue;
             }
             $key = $item->Field;
-            $fillFields[] = "'$key'=>\$request['$key'],";
+            $fillFields[] = "'$key'=>\$data['$key'],";
         }
-        Log::error($this->getNameInput());
         $tmpArr = explode("\\", $this->getNameInput());
-        Log::error($tmpArr);
-
         $lastName = array_pop($tmpArr);
         $simpleNamespace = implode('\\', $tmpArr);
         $stub = str_replace(

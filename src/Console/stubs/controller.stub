@@ -13,14 +13,28 @@ class DummyClass extends Controller
 {
     use ApiResponse;
 
+    private $DummyServiceVariable;
+
+    public function __construct(DummyServiceClass $DummyServiceVariable)
+    {
+        $this->DummyServiceVariable = $DummyServiceVariable;
+    }
      /**
       * [description]
       * @param Request $request
-      * @param DummyServiceClass $DummyServiceVariable
+      * @author: cuibo
+      */
+    public function index(Request $request)
+    {
+
+    }
+     /**
+      * [description]
+      * @param Request $request
       * @return \Illuminate\Http\JsonResponse
       * @author: cuibo
       */
-    public function index(Request $request, DummyServiceClass $DummyServiceVariable)
+    public function getList(Request $request)
     {
         $data = $DummyServiceVariable->getList($request);
 
@@ -40,11 +54,10 @@ class DummyClass extends Controller
     /**
     * [description]
     * @param Request $request
-    * @param DummyServiceClass $DummyServiceVariable
     * @return \Illuminate\Http\JsonResponse
     * @author: cuibo
     */
-    public function store(Request $request, DummyServiceClass $DummyServiceVariable)
+    public function store(Request $request)
     {
         $this->validate($request, [
             DummyStoreValidateVariables
@@ -53,7 +66,7 @@ class DummyClass extends Controller
         ]);
 
         try {
-            $DummyServiceVariable->store($request);
+            $this->DummyServiceVariable->store($request);
         } catch (Throwable $throwable) {
             Log::error($throwable->getMessage());
             return $this->error($throwable->getMessage());
@@ -80,7 +93,7 @@ class DummyClass extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @author: cuibo
      */
-    public function update(Request $request, DummyServiceClass $DummyServiceVariable, $id)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
             DummyUpdateValidateVariables
@@ -89,7 +102,7 @@ class DummyClass extends Controller
         ]);
 
         try {
-            $DummyServiceVariable->update($request, $id);
+            $this->DummyServiceVariable->update($request, $id);
         } catch (Throwable $throwable) {
             Log::error($throwable->getMessage());
             return $this->error($throwable->getMessage());
@@ -100,15 +113,14 @@ class DummyClass extends Controller
     /**
     * [description]
     * @param Request $request
-    * @param DummyServiceClass $DummyServiceVariable
     * @param $id
     * @return \Illuminate\Http\JsonResponse
     * @author: cuibo
     */
-    public function destroy(Request $request, DummyServiceClass $DummyServiceVariable, $id)
+    public function destroy(Request $request, $id)
     {
         try {
-            $DummyServiceVariable->destroy($id);
+            $this->DummyServiceVariable->destroy($id);
         } catch (Throwable $throwable) {
             Log::error($throwable->getMessage());
             return $this->error($throwable->getMessage());

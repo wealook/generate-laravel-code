@@ -36,7 +36,7 @@ class DummyClass
      * @throws Exception
      * @author: cuibo 2019/5/30 10:20
      */
-    public function firstById($id)
+    public function findById($id)
     {
         $DummyModelVariable = DummyModelClass::query()->where('id', $id)->first();
         if (!$DummyModelVariable) {
