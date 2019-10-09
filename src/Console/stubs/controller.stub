@@ -36,7 +36,7 @@ class DummyClass extends Controller
       */
     public function getList(Request $request)
     {
-        $data = $DummyServiceVariable->getList($request);
+        $data = $this->DummyServiceVariable->getList($request);
        // return $this->success($data);
         return response()->json($data);
     }
