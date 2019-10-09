@@ -1,6 +1,6 @@
 {
     "name": "wealook/generate-laravel-code",
-    "version": "v1.0.0",
+    "version": "v1.0.1",
     "type": "library",
     "description": "laravel generate code",
     "keywords": ["laravel", "generate", "Automation", "code"],

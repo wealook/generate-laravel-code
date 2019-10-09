@@ -26,11 +26,11 @@ class DummyClass
 
       /**
      * [description]
-     * @param $request
+     * @param $data
      * @return DummyModelClass|null
      * @author: cuibo 2019/5/30 10:27
      */
-    public function store($request)
+    public function store($data)
     {
         $DummyModelVariable = new DummyModelClass();
         $DummyModelVariable->fill([
@@ -49,19 +49,18 @@ class DummyClass
      * @throws Exception
      * @author: cuibo 2019/5/30 10:25
      */
-    public function show($request, $id)
+    public function find($id)
     {
-        return $this->DummyRepositoryVariable->firstById($id);
+        return $this->DummyRepositoryVariable->findById($id);
     }
     /**
      * [description]
-     * @param $request
      * @param $id
      * @return bool
      * @throws Exception
      * @author: cuibo 2019/5/30 10:24
      */
-    public function update($request, $id)
+    public function update($id,$data)
     {
         $DummyModelVariable =$this->DummyRepositoryVariable->firstById($id);
         $DummyModelVariable->fill([

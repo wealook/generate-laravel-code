@@ -11,6 +11,7 @@ class TestModel extends TestCase
     {
         $this->artisan('produce:model Admin/Config --table=admin_config  --force')->expectsOutput('Model created successfully.');
         $menu = $this->app->make('App\Models\Admin\Config');
+        $menu->get();
     }
 
 }

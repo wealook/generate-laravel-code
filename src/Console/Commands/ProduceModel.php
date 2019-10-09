@@ -156,71 +156,10 @@ class ProduceModel extends GeneratorCommand
     public function buildClass($name)
     {
         $stub = $this->files->get($this->getStub());
-        Log::info($stub);
         $method = 'replace' . lcfirst($this->type);
         $this->$method($stub, $name);
 //        $this->type = '';
         return $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
-    }
-
-    public function replaceController(&$stub, $name)
-    {
-        $rules = [];
-        $messages = [];
-        foreach ($this->tableInfo as $item) {
-            if ($item->Key == 'PRI') {
-                continue;
-            }
-            if (in_array($item->Field, ['created_at', 'updated_at'])) {
-                continue;
-            }
-            $arr = [];
-            $rule = [];
-            $message = [];
-            $paramName = $item->Field;
-
-            if ($item->Null == 'NO') {
-                $rule[] = 'required';
-                $message[$paramName . '.required'] = '';
-            }
-            if (preg_match('/char\((?<number>[0-9]*?)\)/', $item->Type, $arr)) {
-                $rule[] = 'string';
-                $message[$paramName . '.string'] = '';
-                $rule[] = 'max:' . $arr['number'];
-                $message[$paramName . '.max'] = '';
-            }
-            if (preg_match('/int/', $item->Type, $arr)) {
-                $rule[] = 'integer';
-                $message[$paramName . '.integer'] = '';
-            }
-            if (in_array($item->Type, ['timestamp', 'datetime'])) {
-                $rule[] = 'date';
-                $message[$paramName . '.date'] = '';
-            }
-            $message[$paramName . '.*'] = '';
-
-            $rules[] = "'$paramName'=>'" . implode('|', $rule) . "',";
-            foreach ($message as $messageKey => $messageItem) {
-                $messages[] = "'$messageKey'=>'$messageItem',";
-            }
-        }
-        $tmpArr = explode("\\", $this->getNameInput());
-        $lastName = array_pop($tmpArr);
-        $simpleNamespace = implode('\\', $tmpArr);
-        $stub = str_replace(
-            [
-                'DummySimpleNamespace', 'DummyServiceClass', 'DummyServiceVariable',
-                'DummyStoreValidateVariables', 'DummyStoreValidateMessages',
-                'DummyUpdateValidateVariables', 'DummyUpdateValidateMessages'
-            ],
-            [
-                $simpleNamespace, ucfirst($lastName . 'Service'), lcfirst($lastName . 'Service'),
-                implode("\n", $rules), implode("\n", $messages),
-                implode("\n", $rules), implode("\n", $messages),
-            ],
-            $stub
-        );
-        return $this;
     }
 
 
@@ -228,21 +167,18 @@ class ProduceModel extends GeneratorCommand
     {
         $fillable = [];
         $hidden = [];
-        $timestamps = false;
+        $timestamps = 'false';
         foreach ($this->tableInfo as $item) {
             if ($item->Key == 'PRI') {
                 continue;
             }
-//            if (in_array($item->Field, ['created_at', 'updated_at'])) {
-//                continue;
-//            }
             $fillable[] = "'" . $item->Field . "'";
             if (preg_match('/password/', $item->Field)) {
                 $hidden[] = "'" . $item->Field . "'";
             }
         }
-        if (isset($fillable['created_at']) && isset($fillable['updated_at'])) {
-            $timestamps = true;
+        if (in_array("'created_at'", $fillable) && in_array("'updated_at'", $fillable)) {
+            $timestamps = 'true';
         }
         $stub = str_replace(
             [
@@ -251,100 +187,13 @@ class ProduceModel extends GeneratorCommand
             ],
             [
                 implode(', ', $fillable), implode(', ', $hidden),
-                $this->connection, $this->table, $timestamps
+                $this->option('connection') ? $this->connection : '', $this->table, $timestamps
             ],
             $stub
         );
         return $this;
     }
 
-
-    public function replaceService(&$stub, $name)
-    {
-        $fillFields = [];
-        foreach ($this->tableInfo as $item) {
-            if ($item->Key == 'PRI') {
-                continue;
-            }
-            if (in_array($item->Field, ['updated_at', 'created_at'])) {
-                continue;
-            }
-            if (strpos($item->Field, 'password') > 0) {
-                continue;
-            }
-            $key = $item->Field;
-            $fillFields[] = "'$key'=>\$request['$key'],";
-        }
-        $tmpArr = explode("\\", $this->getNameInput());
-        $lastName = array_pop($tmpArr);
-        $simpleNamespace = implode('\\', $tmpArr);
-        $stub = str_replace(
-            [
-                'DummySimpleNamespace', 'DummyRepositoryClass', 'DummyRepositoryVariable', 'DummyModelClass', 'DummyModelVariable',
-                'DummyModelStoreFields', 'DummyModelUpdateFields'
-            ],
-            [
-                $simpleNamespace, ucfirst($lastName . 'Repository'), lcfirst($lastName . 'Repository'), ucfirst($lastName), lcfirst($lastName),
-                implode("\n", $fillFields), implode("\n", $fillFields),
-            ],
-            $stub
-        );
-        return $this;
-
-    }
-
-    public function replaceRepository(&$stub, $name)
-    {
-        $filterCodes = [];
-        foreach ($this->tableInfo as $item) {
-            if ($item->Key == 'PRI') {
-                continue;
-            }
-            if (in_array($item->Field, ['updated_at'])) {
-                continue;
-            }
-            if (strpos($item->Field, 'password') > 0) {
-                continue;
-            }
-            if (preg_match('/^varchar/', $item->Type)) {
-                $key = $item->Field;
-                $code = "
-                    if(!empty(\$filter['$key'])){
-                       \$DummyModelVariable->where('$key','like','%'.\$filter['$key'].'%');
-                    }";
-            } else {
-                if (in_array($item->Type, ['timestamp', 'datetime'])) {
-                    $key = $item->Field . '_start';
-                    $code = "
-                    if(!empty(\$filter['$key'])){
-                       \$DummyModelVariable->where('$key','>=',\$filter['$key']);
-                    }";
-                    $key = $item->Field . '_end';
-                    $code .= "\n
-                    if(!empty(\$filter['$key'])){
-                       \$DummyModelVariable->where('$key','<=',\$filter['$key']);
-                    }";
-                } else {
-                    $key = $item->Field;
-                    $code = "
-                    if(!empty(\$filter['$key'])){
-                       \$DummyModelVariable->where('$key',\$filter['$key']);
-                    }";
-                }
-            }
-            $filterCodes[] = $code;
-
-        }
-        $tmpArr = explode("\\", $this->getNameInput());
-        $lastName = array_pop($tmpArr);
-        $simpleNamespace = implode('\\', $tmpArr);
-        $stub = str_replace(
-            ['DummySimpleNamespace', 'DummyFilterCode', 'DummyModelClass', 'DummyModelVariable'],
-            [$simpleNamespace, implode("\n", $filterCodes), ucfirst($lastName), lcfirst($lastName)],
-            $stub
-        );
-        return $this;
-    }
 
     public function makeRoute($path, $name)
     {
