@@ -242,10 +242,10 @@ class ProduceModelSR extends GeneratorCommand
         $simpleNamespace = implode('\\', $tmpArr);
         $viewBase = $this->option('view');
         if ($viewBase) {
-            $viewIndex = "return view('$viewBase'.index'');";
-            $viewShow = "return view('$viewBase'.index'');";
-            $viewCreate = "return view('$viewBase'.index'');";
-            $viewEdit = "return view('$viewBase'.index'');";
+            $viewIndex = "return view('$viewBase.index');";
+            $viewShow = "return view('$viewBase.index');";
+            $viewCreate = "return view('$viewBase.index');";
+            $viewEdit = "return view('$viewBase.index');";
         } else {
             $viewIndex = "";
             $viewShow = "";
