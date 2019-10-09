@@ -11,5 +11,5 @@ class DummyClass extends Model
     protected $hidden = [DummyModelHidden];
     public $connection = 'DummyModelConnection';
     public $table = 'DummyModelTable';
-    public $timestamps = 'DummyModelTimestamps';
+    public $timestamps = DummyModelTimestamps;
 }

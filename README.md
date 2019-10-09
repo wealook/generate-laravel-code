@@ -6,9 +6,9 @@ zhuce          $app->register('Wealook\Generate\GenerateServiceProvider');
  produce:model {name} {--table=}  {--connection=}  {{--force}}
 ```
 
-* name 名称   Admin\\Config
+* name 名称   Admin\\Config 带命名空间的 生成时model名与表名无关
 * --table=表名        
-* --connection  数据库连接名称
+* --connection  数据库连接名称,不传使用默认链接
 * --force  强制覆盖已有文件
 ***
 ```
