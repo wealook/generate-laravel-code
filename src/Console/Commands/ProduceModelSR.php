@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class ProduceModelSR extends GeneratorCommand
 {
-    protected $signature = 'produce:model_sr {name} {--table=}  {--connection=}  {--resource}  {--route=web}';
+    protected $signature = 'produce:model_sr {name} {--table=}  {--connection=}  {--resource}  {--route=web} {--view=}';
     protected $description = 'Command description';
     protected $type = '';
 
@@ -41,6 +41,7 @@ class ProduceModelSR extends GeneratorCommand
         $this->buildRepository();
         $this->buildRoute();
 
+        $this->buildView();
 //        $this->buildApiResponse();
 
         // Next, we will generate the path to the location where this class' file should get
@@ -48,6 +49,22 @@ class ProduceModelSR extends GeneratorCommand
         // stub files so that it gets the correctly formatted namespace and class name.
 //        $this->info($this->type . ' created successfully.');
         return null;
+    }
+
+    private function buildView()
+    {
+        $viewDir = $this->option('view');
+        if (!$viewDir) {
+            return '';
+        }
+        $rootBase = $this->laravel->resourcePath('views');
+        $path = $rootBase . '/' . $viewDir;
+        $this->makeDirectory($path . '/random');
+        Log::error($path);
+        $this->files->put($path . '/index.blade.php', '');
+        $this->files->put($path . '/show.blade.php', '');
+        $this->files->put($path . '/create.blade.php', '');
+        $this->files->put($path . '/edit.blade.php', '');
     }
 
     private function buildApiResponse()
@@ -223,16 +240,29 @@ class ProduceModelSR extends GeneratorCommand
         $tmpArr = explode("\\", $this->getNameInput());
         $lastName = array_pop($tmpArr);
         $simpleNamespace = implode('\\', $tmpArr);
+        $viewBase = $this->option('view');
+        if ($viewBase) {
+            $viewIndex = "return view('$viewBase'.index'');";
+            $viewShow = "return view('$viewBase'.index'');";
+            $viewCreate = "return view('$viewBase'.index'');";
+            $viewEdit = "return view('$viewBase'.index'');";
+        } else {
+            $viewIndex = "";
+            $viewShow = "";
+            $viewCreate = "";
+            $viewEdit = "";
+        }
         $stub = str_replace(
             [
                 'DummySimpleNamespace', 'DummyServiceClass', 'DummyServiceVariable',
                 'DummyStoreValidateVariables', 'DummyStoreValidateMessages',
-                'DummyUpdateValidateVariables', 'DummyUpdateValidateMessages'
+                'DummyUpdateValidateVariables', 'DummyUpdateValidateMessages', 'DummyViewBase',
+                'DummyViewIndex', 'DummyViewCreate', 'DummyViewShow', 'DummyViewEdit',
             ],
             [
                 $simpleNamespace, ucfirst($lastName . 'Service'), lcfirst($lastName . 'Service'),
                 implode("\n", $rules), implode("\n", $messages),
-                implode("\n", $rules), implode("\n", $messages),
+                implode("\n", $rules), implode("\n", $messages), $viewBase, $viewIndex, $viewCreate, $viewShow, $viewEdit
             ],
             $stub
         );

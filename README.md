@@ -20,6 +20,7 @@ zhuce          $app->register('Wealook\Generate\GenerateServiceProvider');
 * --connection  数据库连接名称
 * --resource  resource风格路由
 * --route  路由文件 默认web
+* --view  视图文件目录(相对于resources/views) 分别生成 index.blade.php  create.blade.php  show.blade.php edit.blade.php
 
 
 ***
