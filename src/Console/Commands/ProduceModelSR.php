@@ -262,10 +262,12 @@ class ProduceModelSR extends GeneratorCommand
             [
                 $simpleNamespace, ucfirst($lastName . 'Service'), lcfirst($lastName . 'Service'),
                 implode("\n", $rules), implode("\n", $messages),
-                implode("\n", $rules), implode("\n", $messages), $viewBase, $viewIndex, $viewCreate, $viewShow, $viewEdit
+                implode("\n", $rules), implode("\n", $messages), $viewBase, $viewIndex, $viewCreate, $viewShow,
+                $viewEdit
             ],
             $stub
         );
+        $this->fixNamespaceSeparation($stub);
         return $this;
     }
 
@@ -298,6 +300,7 @@ class ProduceModelSR extends GeneratorCommand
             ],
             $stub
         );
+        $this->fixNamespaceSeparation($stub);
         return $this;
     }
 
@@ -323,15 +326,18 @@ class ProduceModelSR extends GeneratorCommand
         $simpleNamespace = implode('\\', $tmpArr);
         $stub = str_replace(
             [
-                'DummySimpleNamespace', 'DummyRepositoryClass', 'DummyRepositoryVariable', 'DummyModelClass', 'DummyModelVariable',
+                'DummySimpleNamespace', 'DummyRepositoryClass', 'DummyRepositoryVariable', 'DummyModelClass',
+                'DummyModelVariable',
                 'DummyModelStoreFields', 'DummyModelUpdateFields'
             ],
             [
-                $simpleNamespace, ucfirst($lastName . 'Repository'), lcfirst($lastName . 'Repository'), ucfirst($lastName), lcfirst($lastName),
+                $simpleNamespace, ucfirst($lastName . 'Repository'), lcfirst($lastName . 'Repository'),
+                ucfirst($lastName), lcfirst($lastName),
                 implode("\n", $fillFields), implode("\n", $fillFields),
             ],
             $stub
         );
+        $this->fixNamespaceSeparation($stub);
         return $this;
 
     }
@@ -387,6 +393,7 @@ class ProduceModelSR extends GeneratorCommand
             [$simpleNamespace, implode("\n", $filterCodes), ucfirst($lastName), lcfirst($lastName)],
             $stub
         );
+        $this->fixNamespaceSeparation($stub);
         return $this;
     }
 
@@ -399,6 +406,13 @@ class ProduceModelSR extends GeneratorCommand
     {
         $info = DB::connection($this->connection)->select('desc  ' . $this->table);
         $this->tableInfo = $info;
+    }
+
+    private function fixNamespaceSeparation(&$stub)
+    {
+        for ($i = 0; $i < 100; $i++) {
+            $stub = preg_replace("/\nuse (.*?)\\\\\\\\(.*?);/", "\nuse $1\\\\$2;", $stub);
+        }
     }
 
 }
