@@ -56,13 +56,14 @@ class DummyClass
     /**
      * [description]
      * @param $id
+     * @param $data
      * @return bool
      * @throws Exception
      * @author: cuibo 2019/5/30 10:24
      */
     public function update($id,$data)
     {
-        $DummyModelVariable =$this->DummyRepositoryVariable->firstById($id);
+        $DummyModelVariable =$this->DummyRepositoryVariable->findById($id);
         $DummyModelVariable->fill([
             DummyModelUpdateFields
         ]);
@@ -78,7 +79,7 @@ class DummyClass
      */
     public function destroy($id)
     {
-        $DummyModelVariable =$this->DummyRepositoryVariable->firstById($id);
+        $DummyModelVariable =$this->DummyRepositoryVariable->findById($id);
         return $this->DummyRepositoryVariable->destroy($DummyModelVariable);
     }
 }
