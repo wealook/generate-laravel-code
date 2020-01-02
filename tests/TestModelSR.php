@@ -9,7 +9,7 @@ class TestModelSR extends TestCase
 
     public function test()
     {
-        $this->artisan('produce:model_sr Admin\\\Config --table=admin_config   --route=web');
+        $this->artisan('produce:model_sr AdminConfig --table=admin_config   --route=web');
         $controller = $this->app->make('App\Http\Controllers\Admin\ConfigController');
         $this->get('/admin/config')->assertOk();
     }
